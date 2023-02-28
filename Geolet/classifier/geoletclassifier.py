@@ -46,7 +46,7 @@ class GeoletClassifier(TransformerMixin):
                 f"normalizer={normalizer} unsupported. You can use a custom normalizer by passing its instance")
 
         if selector == 'Random':
-            self.selector = Random(normalizer=self.normalizer, n_geolet_per_class=top_k, verbose=verbose)
+            self.selector = Random(normalizer=self.normalizer, n_geolets=top_k, verbose=verbose)
         elif selector == 'MutualInformation':
             self.selector = RandomInformationGain(normalizer=self.normalizer, bestFittingMeasure=bestFittingMeasure,
                                                   top_k=top_k, n_geolet_per_class=geolet_per_class,

@@ -8,9 +8,9 @@ from Geolet.selectors.SelectorInterface import SelectorInterface
 
 class Random(SelectorInterface):
 
-    def __init__(self, normalizer: NormalizerInterface, n_geolet_per_class=10, verbose=True):
+    def __init__(self, normalizer: NormalizerInterface, n_geolets=10, verbose=True):
         self.verbose = verbose
-        self.n_geolets = n_geolet_per_class
+        self.n_geolets = n_geolets
         self.normalizer = normalizer
 
     def fit(self, X):
@@ -24,11 +24,17 @@ class Random(SelectorInterface):
     def transform(self, tid: np.ndarray, classes: np.ndarray, time: np.ndarray, X: np.ndarray, partid: np.ndarray):
         selected = []
         pk_array = np.array([(a,b) for a, b in zip(tid, partid)])
+        n_classes = len(np.unique(classes))
 
         for classe in np.unique(classes):
             to_choice = np.unique(pk_array[classes == classe], axis=0).tolist()
 
-            n = min(self.n_geolets, len(to_choice))
+            n = min(self.n_geolets//n_classes, len(to_choice))
+
+            if n == 0:  # special case: self.n_geolets < n_classes
+                choices = random.sample(np.unique(pk_array, axis=0).tolist(), self.n_geolets)
+                selected.append(choices)
+                break
 
             choices = random.sample(to_choice, n)
             selected.append(choices)

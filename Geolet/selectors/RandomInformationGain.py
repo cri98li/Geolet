@@ -32,7 +32,7 @@ class RandomInformationGain(SelectorInterface):
 
     def transform(self, tid: np.ndarray, classes: np.ndarray, time: np.ndarray, X: np.ndarray, partid: np.ndarray):
 
-        geolets_tid, geolets_classes, geolets_time, geolets_X = Random(self.normalizer, n_geolet_per_class=self.n_geolet_per_class) \
+        geolets_tid, geolets_classes, geolets_time, geolets_X = Random(self.normalizer, n_geolets=self.n_geolet_per_class) \
             .transform(tid, classes, time, X, partid)
 
         #selected_tr_tid = selected_tr_tid[np.invert(np.isin(selected_tr_tid, geolets_tid))]
