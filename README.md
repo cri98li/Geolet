@@ -40,8 +40,19 @@ You can find the software documentation in the `/docs/` folder and
 a powerpoint presentation on Geolet can be found [here](http://example.org).
 You can cite this work with
 ```
-@article{LANDI20230203,
-    TOOD
+@inproceedings{DBLP:conf/ida/LandiSGMN23,
+  author       = {Cristiano Landi and
+                  Francesco Spinnato and
+                  Riccardo Guidotti and
+                  Anna Monreale and
+                  Mirco Nanni},
+  title        = {Geolet: An Interpretable Model for Trajectory Classification},
+  booktitle    = {{IDA}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {13876},
+  pages        = {236--248},
+  publisher    = {Springer},
+  year         = {2023}
 }
 ```
 
