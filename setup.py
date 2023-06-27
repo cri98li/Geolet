@@ -23,8 +23,8 @@ setup(
     license="BSD-Clause-2",
     description="Package description",
     url="https://github.com/cri98li/Geolet",
-    author="Author Name",
-    author_email="email",
+    author="cri98li",
+    author_email="cri98li@gmail.com",
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha

@@ -25,15 +25,15 @@ class Geohash(PartitionerInterface):
     l'output sarà una lista di encodings della forma (X.shape[0], 1)
     """
 
-    def transform(self, X: np.ndarray):
+    def transform(self, X: np.ndarray, tid):
         self._checkFormat(X)
         #encodes = np.chararray(X.shape[0], itemsize=self.precision)
-        encodes = np.empty((X.shape[0]), dtype=F"U{self.precision}")
+        encodes = []
 
         if self.verbose: print(F"Encoding {X.shape[0]} points with precision {self.precision}", flush=True)
 
 
-        for i, row in enumerate(tqdm(X, disable=not self.verbose, position=0, leave=True)):
-            encodes[i] = geohash.encode(row[0], row[1], self.precision)
+        for i, (tid, row) in enumerate(zip(tid, tqdm(X, disable=not self.verbose, position=0, leave=True))):
+            encodes.append(f"{geohash.encode(row[0], row[1], self.precision)}_{str(tid)}")
 
-        return encodes
+        return np.array(encodes)

@@ -74,7 +74,7 @@ class GeoletClassifier(TransformerMixin):
         time = X[:, 1]
         lat_lon = X[:, 2:]
 
-        partitions = self.partitioner.transform(lat_lon)
+        partitions = self.partitioner.transform(lat_lon, tid)
 
         self.sel_tid, sel_y, self.sel_time, self.lat_lon = self.selector.transform(tid, y, time, lat_lon, partitions)
 
@@ -90,5 +90,5 @@ class GeoletClassifier(TransformerMixin):
 
 def prepare_y(classes, tids):
     selected_tr_classes = [classes[i] for i in range(len(tids) - 1) if tids[i] != tids[i + 1]]
-    selected_tr_classes.append(classes[-1:])
+    selected_tr_classes.append(classes[-1])
     return selected_tr_classes

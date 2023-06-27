@@ -23,13 +23,12 @@ class Random(SelectorInterface):
 
     def transform(self, tid: np.ndarray, classes: np.ndarray, time: np.ndarray, X: np.ndarray, partid: np.ndarray):
         selected = []
-        pk_array = np.array([(a,b) for a, b in zip(tid, partid)])
-        n_classes = len(np.unique(classes))
+        pk_array = partid#np.array([(a,b) for a, b in zip(tid, partid)])
 
         for classe in np.unique(classes):
             to_choice = np.unique(pk_array[classes == classe], axis=0).tolist()
 
-            n = min(self.n_geolets//n_classes, len(to_choice))
+            n = min(self.n_geolets, len(to_choice))
 
             if n == 0:  # special case: self.n_geolets < n_classes
                 choices = random.sample(np.unique(pk_array, axis=0).tolist(), self.n_geolets)
@@ -41,11 +40,11 @@ class Random(SelectorInterface):
 
         selected = [el for lista in selected for el in lista]
 
-        to_keep_indeces = (pk_array[:, None] == selected).all(-1).any(-1) #TODO BUG?
+        to_keep_indeces = np.isin(pk_array, selected)
 
         X[to_keep_indeces] = self.normalizer.transform(pk_array[to_keep_indeces].tolist(), X[to_keep_indeces])
         time[to_keep_indeces] = self.normalizer.transform(pk_array[to_keep_indeces].tolist(), time[to_keep_indeces])
 
-        pk_array = np.array([f"{a}{b}" for a, b in pk_array])
+        #pk_array = np.array([f"{a}{b}" for a, b in pk_array])
 
         return pk_array[to_keep_indeces], classes[to_keep_indeces], time[to_keep_indeces], X[to_keep_indeces]

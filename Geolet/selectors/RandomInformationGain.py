@@ -13,7 +13,8 @@ from Geolet.selectors.SelectorInterface import SelectorInterface
 
 
 class RandomInformationGain(SelectorInterface):
-    def __init__(self, normalizer, bestFittingMeasure, top_k=10, n_geolet_per_class=100, estimation_trajectories_per_class=10,
+    def __init__(self, normalizer, bestFittingMeasure, top_k=10, n_geolet_per_class=100,
+                 estimation_trajectories_per_class=10,
                  n_neighbors=3, n_jobs=1, random_state=None, verbose=True):
         self.verbose = verbose
         self.n_jobs = n_jobs
@@ -32,19 +33,21 @@ class RandomInformationGain(SelectorInterface):
 
     def transform(self, tid: np.ndarray, classes: np.ndarray, time: np.ndarray, X: np.ndarray, partid: np.ndarray):
 
-        geolets_tid, geolets_classes, geolets_time, geolets_X = Random(self.normalizer, n_geolets=self.n_geolet_per_class) \
+        geolets_tid, geolets_classes, geolets_time, geolets_X = Random(self.normalizer,
+                                                                       n_geolets=self.n_geolet_per_class) \
             .transform(tid, classes, time, X, partid)
 
-        #selected_tr_tid = selected_tr_tid[np.invert(np.isin(selected_tr_tid, geolets_tid))]
+        # selected_tr_tid = selected_tr_tid[np.invert(np.isin(selected_tr_tid, geolets_tid))]
 
         unique_classes = np.unique(classes)
         selected_rows = np.full(len(tid), False)
         n = 0
         for classe in unique_classes:
             tmp = np.vstack((tid, classes)).T
-            selected_tr_tid = np.unique(tmp[tmp[:, 1]==classe][:, 0])
+            selected_tr_tid = np.unique(tmp[tmp[:, 1] == classe][:, 0])
             n += min(self.n_geolet_per_class, len(selected_tr_tid))
-            selected_rows |= np.isin(tid, random.sample(selected_tr_tid.tolist(), min(self.n_geolet_per_class, len(selected_tr_tid))))
+            selected_rows |= np.isin(tid, random.sample(selected_tr_tid.tolist(),
+                                                        min(self.n_geolet_per_class, len(selected_tr_tid))))
         selected_tr_tid = tid[selected_rows]
         selected_tr_time = time[selected_rows]
         selected_tr_X = X[selected_rows]
@@ -62,12 +65,12 @@ class RandomInformationGain(SelectorInterface):
 
         for i, process in enumerate(tqdm(processes, disable=not self.verbose, position=0, leave=True)):
             res = process.result()
-            dist_matrix[:,i] = res
+            dist_matrix[:, i] = res
 
-        selected_tr_classes = [classes[selected_rows][i] for i in range(len(selected_tr_tid)-1) if selected_tr_tid[i] != selected_tr_tid[i+1]]
-        selected_tr_classes.append(classes[selected_rows][-1:])
+        selected_tr_classes = classes[selected_rows][np.unique(selected_tr_tid, return_index=True)[1]]
 
-        mutualInfo = mutual_info_classif(dist_matrix, selected_tr_classes, #[k for k, g in groupby(classes[selected_rows])],
+        mutualInfo = mutual_info_classif(dist_matrix, selected_tr_classes,
+                                         # [k for k, g in groupby(classes[selected_rows])],
                                          n_neighbors=self.n_neighbors, random_state=self.random_state)
 
         ri_selected_tid = []
@@ -82,7 +85,7 @@ class RandomInformationGain(SelectorInterface):
         to_keep_indeces = np.isin(geolets_tid, ri_selected_tid)
 
         return geolets_tid[to_keep_indeces], geolets_classes[to_keep_indeces], geolets_time[to_keep_indeces], \
-               geolets_X[to_keep_indeces]
+            geolets_X[to_keep_indeces]
 
     def _computeDist(self, tr_tid, tr_time, tr_X, geo_t, geo_X):
         unique_tr = np.unique(tr_tid)
